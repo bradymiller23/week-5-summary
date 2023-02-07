@@ -3,3 +3,165 @@ title: "week5notes"
 format: html
 ---
 
+```{r}
+library(tidyverse)
+library(ISLR2)
+library(cowplot)
+library(kableExtra)
+```
+
+# February 7th
+
+#### **What is the interpretation of $\beta_0$ and $\beta_1$ (regression coefficients)**
+
+The regression model is given as follows:
+$$
+y_i = \beta_0 + \beta_1*x_i + \epsilon_i
+$$
+where:
+
+1. $y_i$ are the response
+1. $x_i$ is the covariate
+1. $\epsilon_i$ is the error (vertical black line in lecture 4 notes)
+1. $\beta_0$ and $beta_1$ are the regression coefficients
+1. $i=1,2, \dots, n$ are the indices for the observations
+
+
+* $\beta_0$ is the intercept
+* $\beta_1$ is the slope
+
+
+```{r}
+library(ggplot2)
+attach(mtcars)
+
+mtcars %>%
+  head() %>%
+  kable()
+```
+
+Consider the following relationship
+
+```{r}
+x <- mtcars$hp
+y <- mtcars$mpg
+
+plot(x, y, pch = 20, xlab = "HP", ylab = "MPG")
+
+model <- lm(y ~ x)
+summary(model)
+```
+For the intercept this means that:
+
+* A 'hypothetical' car with 'hp=0' will have 'mpg=30.09' = $\beta_0$
+
+
+Its more instructive and interesting to consider the interpretation of the slope:
+
+Lets say we have some covariate $x_0$ then the expected value for $y(x_0)$ is given by:
+
+* $$y(x_0) = \beta_0 + \beta_1 x_0$$
+
+The expected value for $x_0 + 1$ is...
+$$
+\begin{align}
+y(x_0 + 1) = \beta_0 + \beta_1 \times (x_0 + 1)\\ \\
+&= \beta_0 + \beta_1 x_0 + \beta_1\\ \\
+&= y(x_0) + \beta_1\\ \\above
+
+\implies \beta_1 &= y(x_0 + 1) - y(x_0)
+\end{align}
+$$
+
+
+#### **Cateogorical covariates**
+
+Up until now, we have looked at _simple_ linear regression models where both $x$ and $y$ are quantitative
+
+Confirm that 'cyl' is categorical
+```{r}
+summary(cyl)
+```
+
+Another example is with the iris dataset:
+```{r}
+iris %>%
+  head() %>%
+  kable()
+```
+
+Want to see if there is a relationship between 'species' and 'sepal.length'
+
+```{r}
+x <- iris$Species
+y <- iris$Sepal.Length
+
+# boxplot(Sepal.Length ~ Species, df)
+boxplot(y ~ x)
+```
+
+
+Lets run a linear regression model and see what the model output is going to look like
+```{r}
+cat_model <- lm(Sepal.Length ~ Species, iris)
+cat_model
+```
+Even if $x$ is categorical, we can still write down the regression model as follows:
+$$
+y_i = \beta_0 + \beta_1 x_i
+$$
+where $x_i \in \{setosa, \ versicolor, \ virginica \}$. This means that we end up with, (fundamentally) three different models
+
+1. $y_i = \beta_0 + \beta_1 (x_i == 'setosa')$
+1. $y_i = \beta_0 + \beta_1 (x_i == 'versicolor')$
+1. $y_i = \beta_0 + \beta_1 (x_i == 'virginica')$
+
+
+Now the interpretation for the coefficients are as follows:
+
+
+**Intercept**
+
+$\beta_0$ is the expected $y$ value when $x$ belongs to the base category. This is what the intercept is capturing
+
+**Slope**
+
+$\beta_1$ with the name 'Species.versicolor' represents the following
+
+'(Intercept)' = $y(x = \texttt{setosa})$
+
+'Species.versicolor' = $y(x = \texttt{versicolor}) - y(x = \texttt{setosa})$
+'Species.virginica' = $y(x = \texttt{virginica}) - y(x = \texttt{setosa})$
+
+
+
+#### Reordering the factors
+
+Lets say that we didn't want 'setosa' to be the baseline level, and instead, we wanted 'virginica' to be the baseline level. How would we do this?
+
+First we reorder/relevel the categorical covariate
+```{r}
+# before
+iris$Species
+iris$Species <- relevel(iris$Species, "virginica")
+
+# after
+iris$Species
+```
+
+Once we do the re-leveling, we can now run the regression model:
+```{r}
+new_cat_model <- lm(Sepal.Length ~ Species, iris)
+new_cat_model
+```
+
+
+
+
+
+
+
+
+
+
+# February 9th
