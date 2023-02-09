@@ -228,7 +228,60 @@ ranges <- df3 %>%
 ```
 
 
+What is the interpretation for the coefficients?
 
+1. $\beta_0$ is the expected value of $y$ when $income = 0$ and $rating = 0$ (the credit limit with 0 income and 0 rating is -532) --> this is an extrapolation
+1. $\beta_1$ is saying that if $rating$ is held constant and $income$ changes by 1 unit, then the corresponding change in the 'limit' is $0.5573$.
+1. $\beta_2$ is saying that if $income$ is held constant and $rating$ changes by 1 unit, then the corresponding change in the 'limit' is $14.7711$.
+
+
+What about the significance?
+```{r}
+summary(model)
+```
+The $p$-value for 'rating' is very significant, while its not significant for 'income'
+
+* Multi-colinearity issue with the 3D model
+
+  1. Not idealisitic that if we hold rating constant and income increases, by one unit then limit increase by 0.5573. --> You can't change income by 1 without impacting rating
+ 
+ 
+ 
+ 
+```r
+x <- seq(0,1,100)
+b0 <- 1.0
+b1 <- 2.0
+y <- b0 + b1 * x + rnorm(100) * 0.1
+plot(x, y, pch = 20)
+
+model <- lm(y ~ x)
+summary(model)
+```
+* Lower noise increases the $R^2$ value
+
+* If you make $\beta_0$, $\beta_1$, and noise values super small, then p-value will be super high and lead to a low $R^2$ value
+
+* Can have high $p$-value with low $R^2$ value, but CANT have low $p$-value with high $R^2$ value
+
+
+
+#### Multiple Regression with categorical covariates
+Using income, rating, and student status to predict limit you will run 2 different models ... 
+
+1. once for when student is yes
+1. once for when student is no
+
+* By adding the categorical variable, you are adding an additional intercept term
+
+```r
+model <- lm(limit ~ rating + married, df)
+
+ggplot(df) +
+  geom_point(aes(x=rating, y=limit, color=married)) +
+  geom_smooth(aes(x=rating, y=limit, fill=married))
+
+```
 
 
 
