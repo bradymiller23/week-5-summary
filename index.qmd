@@ -1,6 +1,6 @@
 ---
 title: "Weekly Summary Template"
-author: "Author Name"
+author: "Brady Miller"
 title-block-banner: true
 title-block-style: default
 toc: true
@@ -9,8 +9,101 @@ format: html
 ---
 
 ---
+```{r}
+library(tidyverse)
+library(ISLR2)
+library(cowplot)
+library(kableExtra)
+```
 
-## Tuesday, Jan 17
+## Tuesday, February 7th
+
+::: {.callout-important}
+## TIL
+
+Include a _very brief_ summary of what you learnt in this class here. 
+
+Today, I learnt the following concepts in class:
+
+1. What the interpretation of $\beta_0\ and $\beta_1$ is (regression coefficients)
+1. Categorical covariates
+1. Item 3
+:::
+
+#### **Interpretation of $\beta_0\ and $\beta_1$ (regression coefficients)**
+
+* The regression model is...
+
+$y_i = \beta_0 + \beta_1 x_i + \epsilon_i$
+
+* $\beta_0$ and $\beta_1$ are the regression coefficients with $\beta_0$ being the intercept and $\beta_1$ being the slope
+
+```{r}
+library(ggplot2)
+attach(mtcars)
+
+x <- mtcars$hp
+y <- mtcars$mpg
+
+model <- lm(y ~ x)
+summary(model)
+```
+Based on the summary model...
+
+* The intercept means that a car with 'hp=0' would have 'mpg=30.09'
+## Thursday, February 9th
+
+
+* From this, if we have some co-variate $x_0$, then the expected value for $y(x_0)$ is given by:
+
+$$y(x_0) = \beta_0 + \beta_1 x_0$$
+
+* Using this we can find the expected value for $x_0 + 1$, which is...
+
+$$
+\begin{align}
+y(x_0 + 1) = \beta_0 + \beta_1 \times (x_0 + 1)\\ \\
+&= \beta_0 + \beta_1 x_0 + \beta_1\\ \\
+&= y(x_0) + \beta_1\\ \\above
+
+\implies \beta_1 &= y(x_0 + 1) - y(x_0)
+\end{align}
+$$
+
+#### **Categorical covariates**
+In class, we looked at categorical covariates in the iris dataset, and created a boxplot and a summary of the model for the categorical covariates
+
+```{r}
+x <- iris$Species
+y <- iris$Sepal.Length
+
+# boxplot(Sepal.Length ~ Species, df)
+boxplot(y ~ x)
+```
+
+```{r}
+cat_model <- lm(Sepal.Length ~ Species, iris)
+cat_model
+```
+
+Even if $x$ is categorical, we can still write down the regression model as follows:
+$$
+y_i = \beta_0 + \beta_1 x_i
+$$
+where $x_i \in \{setosa, \ versicolor, \ virginica \}$. This means that we end up with, three different models with each one having a different intercept.
+
+1. $y_i = \beta_0 + \beta_1 (x_i == 'setosa')$
+1. $y_i = \beta_0 + \beta_1 (x_i == 'versicolor')$
+1. $y_i = \beta_0 + \beta_1 (x_i == 'virginica')$
+
+* The interpretation of the intercept ($\beta_0$) is the expected y value when x belongs to the base category
+* The slope ($\beta_1$) with the name 'Species.versicolor' represents the following:
+
+* '(Intercept)' = $y(x = \texttt{setosa})$
+
+* 'Species.versicolor' = $y(x = \texttt{versicolor}) - y(x = \texttt{setosa})$
+* 'Species.virginica' = $y(x = \texttt{virginica}) - y(x = \texttt{setosa})$
+
 
 ::: {.callout-important}
 ## TIL
@@ -24,53 +117,3 @@ Today, I learnt the following concepts in class:
 1. Item 3
 :::
 
-Provide more concrete details here. You can also use footenotes[^footnote] if you like
-
-```{R results='hide'}
-#| output: false
-library(dplyr)
-library(purrr)
-```
-
-
-For example: 
-in class we learnt we learnt about the `map` function from the `purrr` package. 
-
-
-```{R results='hide', fig.width=7, fig.height=7}
-par(mfrow=c(3, 3), mar=c(3.5, 3.5, 2, 1), mgp=c(2.4, 0.8, 0))
-map(1:9, function(i)rnorm(1000) %>% hist(., main=i, col=i))
-```
-
-
-
-## Thursday, Jan 19
-
-
-
-::: {.callout-important}
-## TIL
-
-Include a _very brief_ summary of what you learnt in this class here. 
-
-Today, I learnt the following concepts in class:
-
-1. Item 1
-1. Item 2
-1. Item 3
-:::
-
-Provide more concrete details here, e.g., 
-
-In class we learnt how to use the `map` function to create multiple regression diagnostic plots
-
-```{R results='hide', fig.height=4}
-par(mfcol=c(2, 3), mar=c(3.5, 3.5, 2, 1), mgp=c(2.4, 0.8, 0))
-mtcars %>%
-  split(.$cyl) %>%
-  map(~ lm(mpg ~ wt, data = .x)) %>%
-  map(function(x)plot(x, which=c(1, 2)))
-```
-
-
-[^footnote]: You can include some footnotes here
