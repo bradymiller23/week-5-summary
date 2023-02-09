@@ -3,12 +3,11 @@ title: "Weekly Summary Template"
 author: "Brady Miller"
 title-block-banner: true
 title-block-style: default
-toc: true
+toc: true 
 format: html
 # format: pdf
 ---
 
----
 ```{r}
 library(tidyverse)
 library(ISLR2)
@@ -27,10 +26,10 @@ Today, I learnt the following concepts in class:
 
 1. What the interpretation of $\beta_0\ and $\beta_1$ is (regression coefficients)
 1. Categorical covariates
-1. Item 3
+1. How to reorder factors
 :::
 
-#### **Interpretation of $\beta_0\ and $\beta_1$ (regression coefficients)**
+#### *Interpretation of $\beta_0\ and $\beta_1$ (regression coefficients)*
 
 * The regression model is...
 
@@ -70,7 +69,7 @@ y(x_0 + 1) = \beta_0 + \beta_1 \times (x_0 + 1)\\ \\
 \end{align}
 $$
 
-#### **Categorical covariates**
+#### *Categorical covariates*
 In class, we looked at categorical covariates in the iris dataset, and created a boxplot and a summary of the model for the categorical covariates
 
 ```{r}
@@ -104,6 +103,33 @@ where $x_i \in \{setosa, \ versicolor, \ virginica \}$. This means that we end u
 * 'Species.versicolor' = $y(x = \texttt{versicolor}) - y(x = \texttt{setosa})$
 * 'Species.virginica' = $y(x = \texttt{virginica}) - y(x = \texttt{setosa})$
 
+
+#### *Reordering factors* 
+Lets say that we didn't want 'setosa' to be the baseline level, and instead, we wanted 'virginica' to be the baseline level. How would we do this?
+
+First we reorder/relevel the categorical covariate
+```{r}
+# before
+iris$Species
+iris$Species <- relevel(iris$Species, "virginica")
+
+# after
+iris$Species
+```
+
+Once we do the re-leveling, we can now run the regression model:
+```{r}
+new_cat_model <- lm(Sepal.Length ~ Species, iris)
+new_cat_model
+```
+
+
+
+
+
+
+
+## Tuesday, February 9th
 
 ::: {.callout-important}
 ## TIL
