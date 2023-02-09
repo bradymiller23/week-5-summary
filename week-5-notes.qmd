@@ -1,5 +1,5 @@
 ---
-title: "week5notes"
+title: "Week 5 Notes"
 format: html
 ---
 
@@ -10,7 +10,7 @@ library(cowplot)
 library(kableExtra)
 ```
 
-# February 7th
+# **February 7th**
 
 #### **What is the interpretation of $\beta_0$ and $\beta_1$ (regression coefficients)**
 
@@ -135,7 +135,7 @@ $\beta_1$ with the name 'Species.versicolor' represents the following
 
 
 
-#### Reordering the factors
+#### **Reordering the factors**
 
 Lets say that we didn't want 'setosa' to be the baseline level, and instead, we wanted 'virginica' to be the baseline level. How would we do this?
 
@@ -157,6 +157,75 @@ new_cat_model
 
 
 
+# **February 9th**
+
+```{r}
+library(plotly)
+```
+
+
+### **Multiple regression**
+
+This is the extension of simple linear regression to multiple covariates
+$X = [x_1 | x_2 | \dots | x_p]$, i.e.,
+
+$$
+y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \dots + \beta_p x_p + \epsilon
+$$
+
+
+
+
+
+and the full description of the model is as follows:
+$$
+y = \beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + \dots + \beta_p x_{p,i} + \epsilon
+$$
+
+Consider the 'Credit' dataset
+```{r}
+library(tibble)
+library(ISLR2)
+attach(Credit)
+
+df <- Credit %>%
+  tibble()
+colnames(df) <- tolower(colnames(df))
+df
+```
+
+We will look at the following 3 columns: 'income, rating, limit'.
+
+```{r}
+df3 <- df %>%
+  select('income', 'rating', 'limit')
+df3
+```
+
+If we want to see how the credit limit is related to income and credit rating, we can visualize the following plot
+
+```{r}
+fig <- plot_ly(df3, x=~income, y=~rating, z=~limit)
+fig %>% add_markers()
+```
+This models a linear relationship, which in 3-dimensions is a plane (a hyperplane)
+
+
+
+The regression model is as follows:
+```{r}
+model <- lm(limit ~ income + rating, df3)
+model
+```
+* Have 3 different coefficients
+* 2nd/3rd numbers are the slopes associated with the income and rating
+
+```r
+ranges <- df3 %>%
+  select(income, rating) %>%
+  colnames() %>%
+
+```
 
 
 
@@ -164,4 +233,3 @@ new_cat_model
 
 
 
-# February 9th
