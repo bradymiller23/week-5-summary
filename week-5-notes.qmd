@@ -209,7 +209,28 @@ fig <- plot_ly(df3, x=~income, y=~rating, z=~limit)
 fig %>% add_markers()
 ```
 This models a linear relationship, which in 3-dimensions is a plane (a hyperplane)
+```r
 
+ranges <- df3 %>%
+  select(income, rating) %>%
+  colnames() %>%
+  map(\(x) seq(0.1 * min(df3[x]), 1.1 * max(df3[x]), length.out = 50))
+
+b <- model$coefficients
+z <- outer(
+  ranges[[1]],
+  ranges[[2]],
+  Vectorize(function(x2, x3) {
+    b[1] + b[2] * x2 + b[3] * x3
+  })
+)
+z
+fig %>%
+  add_surface(x = ranges[[1]], y = ranges[[2]], z = t(z),  alpha = 0.3) %>%
+  add_surface()
+
+?add_surface()
+```
 
 
 The regression model is as follows:
@@ -219,13 +240,6 @@ model
 ```
 * Have 3 different coefficients
 * 2nd/3rd numbers are the slopes associated with the income and rating
-
-```r
-ranges <- df3 %>%
-  select(income, rating) %>%
-  colnames() %>%
-
-```
 
 
 What is the interpretation for the coefficients?
@@ -249,10 +263,12 @@ The $p$-value for 'rating' is very significant, while its not significant for 'i
  
  
 ```r
-x <- seq(0,1,100)
+x <- seq(0,100,1)
+?seq()
 b0 <- 1.0
 b1 <- 2.0
-y <- b0 + b1 * x + rnorm(100) * 0.1
+y <- b0 + b1 * x + rnorm(100) * 0.4
+
 plot(x, y, pch = 20)
 
 model <- lm(y ~ x)
