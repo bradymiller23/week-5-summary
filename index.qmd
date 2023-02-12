@@ -4,8 +4,9 @@ author: "Brady Miller"
 title-block-banner: true
 title-block-style: default
 toc: true 
-format: html
-# format: pdf
+# format: html
+format: pdf 
+prefer-html: true
 ---
 
 ```{r}
@@ -24,12 +25,12 @@ Include a _very brief_ summary of what you learnt in this class here.
 
 Today, I learnt the following concepts in class:
 
-1. What the interpretation of $\beta_0\ and $\beta_1$ is (regression coefficients)
+1. What the interpretation of $\beta_0$ and $\beta_1$ is (regression coefficients)
 1. Categorical covariates
 1. How to reorder factors
 :::
 
-#### *Interpretation of $\beta_0\ and $\beta_1$ (regression coefficients)*
+#### Interpretation of $\beta_0\ and $\beta_1$ (regression coefficients)
 
 * The regression model is...
 
@@ -59,17 +60,12 @@ $$y(x_0) = \beta_0 + \beta_1 x_0$$
 
 * Using this we can find the expected value for $x_0 + 1$, which is...
 
-$$
-\begin{align}
-y(x_0 + 1) = \beta_0 + \beta_1 \times (x_0 + 1)\\ \\
-&= \beta_0 + \beta_1 x_0 + \beta_1\\ \\
-&= y(x_0) + \beta_1\\ \\above
+$y(x_0 + 1)$ = $\beta_0$ + $\beta_1$ $\times$ $(x_0 + 1)$ = $\beta_0$ + $\beta_1$ $x_0$ + $\beta_1$ = $y(x_0)$ + $\beta_1$
 
-\implies \beta_1 &= y(x_0 + 1) - y(x_0)
-\end{align}
-$$
+* This implies that  $\beta_1 = y(x_0 + 1) - y(x_0)$
 
-#### *Categorical covariates*
+
+#### Categorical covariates
 In class, we looked at categorical covariates in the iris dataset, and created a boxplot and a summary of the model for the categorical covariates
 
 ```{r}
@@ -104,7 +100,7 @@ where $x_i \in \{setosa, \ versicolor, \ virginica \}$. This means that we end u
 * 'Species.virginica' = $y(x = \texttt{virginica}) - y(x = \texttt{setosa})$
 
 
-#### *Reordering factors* 
+#### Reordering factors
 Lets say that we didn't want 'setosa' to be the baseline level, and instead, we wanted 'virginica' to be the baseline level. How would we do this?
 
 First we reorder/relevel the categorical covariate
@@ -138,8 +134,138 @@ Include a _very brief_ summary of what you learnt in this class here.
 
 Today, I learnt the following concepts in class:
 
-1. Item 1
-1. Item 2
-1. Item 3
+1. How to make a plot for a model that incorporates more than 1 quantitative covariate
+1. The impact of noise and $\beta$ values on $R^2$
+1. Multiple regression with categorical covariates
 :::
 
+```{r}
+library(tibble)
+library(ISLR2)
+attach(Credit)
+
+df <- Credit %>%
+  tibble()
+colnames(df) <- tolower(colnames(df))
+df
+```
+#### Plotting a model with more than 1 quantitative covariate
+
+We will look at the following 3 columns: 'income, rating, limit'.
+
+```{r}
+df3 <- df %>%
+  select('income', 'rating', 'limit')
+df3
+```
+
+If we want to see how the credit limit is related to income and credit rating, we can visualize the following plot
+
+```{r}
+library(plotly)
+fig <- plot_ly(df3, x=~income, y=~rating, z=~limit)
+fig %>% add_markers()
+```
+This models a linear relationship, which in 3-dimensions is a plane (a hyperplane)
+
+* Was shown in class what the hyperplane looked like but weren't given the code, 
+so couldn't include that in the summary
+
+The regression model is as follows:
+```{r}
+model <- lm(limit ~ income + rating, df3)
+model
+```
+* Have 3 different coefficients
+* 2nd/3rd numbers are the slopes associated with the income and rating
+
+
+What is the interpretation for the coefficients?
+
+1. $\beta_0$ is the expected value of $y$ when $income = 0$ and $rating = 0$ (the credit limit with 0 income and 0 rating is -532) --> this is an extrapolation
+1. $\beta_1$ is saying that if $rating$ is held constant and $income$ changes by 1 unit, then the corresponding change in the 'limit' is $0.5573$.
+1. $\beta_2$ is saying that if $income$ is held constant and $rating$ changes by 1 unit, then the corresponding change in the 'limit' is $14.7711$.
+
+
+What about the significance?
+```{r}
+summary(model)
+```
+The $p$-value for 'rating' is very significant, while its not significant for 'income'
+
+* Multi-colinearity issue with the 3D model
+
+  1. Not idealisitic that if we hold rating constant and income increases, by one unit then limit increase by 0.5573. --> You can't change income by 1 without impacting rating
+
+
+
+#### The impact of noise and $\beta$ values on $R^2$
+
+This first code chunk shows the model with very little noise and the output model
+summary to demonstrate the very high $R^2$ and $p$-value that occurs with very 
+low noise
+```{r}
+x <- seq(0,100,1)
+b0 <- 1.0
+b1 <- 3.0
+y <- b0 + b1 * x + rnorm(100) * 0.1
+
+plot(x, y, pch = 20)
+
+model <- lm(y ~ x)
+summary(model)
+```
+
+This next code chunk shows what happens with a much greater noise value. The 
+intercept $p$-value is much high than the previous model and the $R^2$ value 
+decreases as well.
+```{r}
+x <- seq(0,100,1)
+b0 <- 1.0
+b1 <- 3.0
+y <- b0 + b1 * x + rnorm(100) * 20
+
+plot(x, y, pch = 20)
+
+model <- lm(y ~ x)
+summary(model)
+```
+To summarize: 
+
+* Lower noise increases the $R^2$ value
+
+* If you make $\beta_0$, $\beta_1$, and noise values super small, then p-value will be super high and lead to a low $R^2$ value
+
+* Can have high $p$-value with low $R^2$ value, but CANT have low $p$-value with high $R^2$ value
+
+
+
+
+#### Multiple regression with categorical covariates
+
+To demonstrate how to incorporate both categorical and quantitative covariates 
+into a regression model, we will use the rating and marital status from
+the Credit dataset to try and predict the limit.
+
+
+To create the models, you need to run 2 separate models using income, rating, and 
+marital status to predict limit. 
+1. once for when student is yes
+1. once for when student is no
+
+* By adding the categorical variable, you are adding an additional intercept term
+
+```{r}
+model <- lm(limit ~ rating + married, df)
+summary(model)
+
+ggplot(df) +
+  geom_point(aes(x=rating, y=limit, color=married)) +
+  geom_smooth(aes(x=rating, y=limit, fill=married))
+
+```
+The model above does have 2 different lines, they are just so close together,
+that you can't really see it, which implies that they have the same regression 
+line. From the model summary, you can see that the $p$-value for marital status 
+is very high, which indicates that it is not a good predictor of someones credit
+limit. 
