@@ -210,6 +210,7 @@ fig %>% add_markers()
 ```
 This models a linear relationship, which in 3-dimensions is a plane (a hyperplane)
 ```r
+model <- lm(limit ~ rating + income, df3)
 
 ranges <- df3 %>%
   select(income, rating) %>%
@@ -224,12 +225,12 @@ z <- outer(
     b[1] + b[2] * x2 + b[3] * x3
   })
 )
-z
+z <- as.numeric(z)
+typeof(z)
 fig %>%
-  add_surface(x = ranges[[1]], y = ranges[[2]], z = t(z),  alpha = 0.3) %>%
+  add_surface(x = ranges[[1]], y = ranges[[2]], z = t(as.numeric(z)),  alpha = 0.3) %>%
   add_surface()
 
-?add_surface()
 ```
 
 
