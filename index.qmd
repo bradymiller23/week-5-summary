@@ -1,11 +1,11 @@
 ---
 title: "Weekly Summary Template"
-author: "Brady Miller"
+author: "Brady Miller" 
 title-block-banner: true
 title-block-style: default
 toc: true 
-# format: html
-format: pdf 
+format: html
+# format: pdf 
 prefer-html: true
 ---
 
@@ -30,7 +30,7 @@ Today, I learnt the following concepts in class:
 1. How to reorder factors
 :::
 
-#### Interpretation of $\beta_0\ and $\beta_1$ (regression coefficients)
+#### Interpretation of $\beta_0$ and $\beta_1$ (regression coefficients)
 
 * The regression model is...
 
